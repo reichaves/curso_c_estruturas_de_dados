@@ -35,7 +35,11 @@ O foco aqui é a linguagem C aplicada a estruturas de dados, seguindo o material
 - **`ACH2023.pdf`**: apostila de 55 páginas com os algoritmos em C de todas as estruturas vistas no curso (detalhes abaixo).
 - **`.vscode/tasks.json`**: tarefa de build padrão do VS Code. Compila o arquivo aberto com `clang -g` e gera o executável na mesma pasta.
 
-Os executáveis (`hello`, `idade`, ...) e as pastas `*.dSYM/` (símbolos de depuração do macOS) saem da compilação e não precisam ir para o Git. Veja a sugestão de `.gitignore` no fim deste arquivo.
+### Códigos das aulas
+
+As pastas `aula01/` a `aula08/` têm os códigos do professor, baixados de [digiampietri/ed](https://www.each.usp.br/digiampietri/ed/). O roteiro completo está mais abaixo.
+
+Os executáveis (`hello`, `idade`, ...) e as pastas `*.dSYM/` (símbolos de depuração do macOS) saem da compilação e ficam fora do Git pelo `.gitignore` (veja o fim deste arquivo).
 
 ## Como compilar e executar
 
@@ -81,12 +85,37 @@ Sequência das aulas publicadas em [digiampietri/ed](https://www.each.usp.br/dig
 | 13 | Duas pilhas em um único vetor | `duasPilhasEstaticas.c`, `usaDuasPilhasEstaticas.c` |
 | 14 | Matriz esparsa | `matrizSimples.c`, `esparsasArranjoDeListas.c`, `usaEsparsasArranjoDeListas.c` |
 
-Os arquivos `usa*.c` são programas de teste que fazem `#include` da implementação e chamam suas funções. Um jeito de baixá-los para cá, organizados por aula:
+Os arquivos `usa*.c` são programas de teste que fazem `#include` da implementação e chamam suas funções. Os arquivos de implementação (`listaLigada.c`, `pilhaEstatica.c`, ...) não têm `main` e não compilam sozinhos: compile sempre o `usa*.c`.
+
+```bash
+clang -g aula05/usaListaLigadaInterativo.c -o aula05/usaListaLigadaInterativo.out
+./aula05/usaListaLigadaInterativo.out    # comandos: i 5, e 5, p, l, d, h, q
+```
+
+Use a extensão `.out` nos executáveis das aulas: o `.gitignore` já ignora `*.out`.
+
+As aulas 01 a 08 já estão baixadas nas pastas `aulaNN/`. Um jeito de baixar as demais, organizadas por aula:
 
 ```bash
 BASE=https://www.each.usp.br/digiampietri/ed
-mkdir -p aula03 && curl -o aula03/listaSequencial.c $BASE/aula03/listaSequencial.c
+mkdir -p aula09 && curl -o aula09/pilhaDinamica.c $BASE/aula09/pilhaDinamica.c
 ```
+
+### Ajustes feitos nos códigos baixados
+
+- Arquivos convertidos de ISO-8859-1 para UTF-8 e de CRLF (Windows) para LF, para os acentos aparecerem certos no VS Code.
+- `#include <malloc.h>` trocado por `#include <stdlib.h>` em `aula02/testaEstrutura.c`, `aula02/EstruturaSimples2.c`, `aula06/listaLigadaD.c`, `aula07/listaLigadaCabCirc.c` e `aula08/pilhaEstatica.c`. O `malloc.h` só existe no Linux; o `stdlib.h` é o cabeçalho padrão e compila no macOS.
+
+Fora isso, o código está como o professor publicou. Todos os programas foram compilados com `clang -Wall` e testados no macOS.
+
+### Pontos de atenção (bons exercícios)
+
+| Arquivo | O que acontece | Por quê |
+|---|---|---|
+| `aula02/EstruturaSimples2.c` | Aviso de ponteiro não inicializado | Proposital: imprime `pessoa1` antes do `malloc` para mostrar o lixo de memória |
+| `aula04/listaSequencialOrdenada.c` | `inserirElemListaOrdSemDup` insere na posição errada quando a chave é menor que a primeira (inserindo 5, 9, 3, 1 resulta em `5 1 3 9`) | O laço usa `while(pos>0 ...)`; deveria ser `pos>=0`. A `main` não chama essa função |
+| `aula07/listaLigadaCabCirc.c` | Com a lista vazia, o comando `0` mostra `Primeiro elemento 1 ...` (lixo) | `retornarPrimeiro` devolve o nó-cabeça em vez de `NULL` quando a lista está vazia |
+| `aula07/listaLigadaCabCirc.c`, `aula08/pilhaEstatica.c` | Avisos `'/*' within block comment` | Comentários fechados com `* /` em vez de `*/`; inofensivo |
 
 ## Programa da SIN5013 (2º semestre de 2026)
 
@@ -139,25 +168,12 @@ typedef int TIPOCHAVE;    // tipo da chave de busca
 2. A partir da aula 06, compilar com `-fsanitize=address` para pegar vazamentos e acessos inválidos de memória.
 3. Para cada estrutura, anotar a complexidade de inserção, exclusão e busca. É isso que a Parte 1 da disciplina cobra.
 
-## Sugestão de `.gitignore`
+## `.gitignore`
 
-```gitignore
-# Executáveis e símbolos de depuração gerados pelo clang
-*.dSYM/
-*.o
-*.out
-hello
-helloworld
-idade
-imprimir
-inserir_idade
-atribuicao_constancia
-achemenormaior
-main
+O repositório ignora:
 
-# Ambiente
-.venv/
-.DS_Store
-```
+- executáveis gerados pelo `clang` (`*.out`, `*.o` e os nomes dos exercícios da raiz, como `hello` e `idade`);
+- pastas `*.dSYM/` com símbolos de depuração do macOS;
+- `.venv/` e `.DS_Store`.
 
-Outra opção é compilar sempre para uma pasta `bin/` e ignorar só ela.
+Ao compilar os códigos das aulas, use `-o nome.out` para o executável não aparecer no `git status`.
