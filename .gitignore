@@ -1,0 +1,16 @@
+# Executáveis e símbolos de depuração gerados pelo clang
+*.dSYM/
+*.o
+*.out
+hello
+helloworld
+idade
+imprimir
+inserir_idade
+atribuicao_constancia
+achemenormaior
+main
+
+# Ambiente
+.venv/
+.DS_Store
