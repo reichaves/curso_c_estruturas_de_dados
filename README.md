@@ -43,6 +43,8 @@ Os executáveis (`hello`, `idade`, ...) e as pastas `*.dSYM/` (símbolos de depu
 
 ## Como compilar e executar
 
+As instruções abaixo são para macOS (`clang`). No Windows, veja [No Windows (gcc)](#no-windows-gcc).
+
 ### Pré-requisito
 
 No macOS, o compilador C é o `clang`, que vem com as ferramentas de linha de comando do Xcode. Se `clang --version` responder "command not found", instale com:
@@ -174,6 +176,59 @@ O `-g` inclui informações de depuração. No macOS ele cria uma pasta `<nome>.
 find . -name "*.out" -not -path "./.venv/*" -delete
 find . -name "*.dSYM" -type d -not -path "./.venv/*" -exec rm -rf {} +
 ```
+
+### No Windows (gcc)
+
+No Windows, o compilador usado é o `gcc` (MinGW-w64, instalado por exemplo pelo [MSYS2](https://www.msys2.org/)). Confira se ele está no PATH com `gcc --version`.
+
+Rode os comandos no PowerShell, a partir da pasta do projeto:
+
+```powershell
+cd E:\Code\curso_c_estruturas_de_dados
+
+# compilar
+gcc -std=c17 aula01\HelloWorld.c -o aula01\HelloWorld.exe
+
+# executar
+.\aula01\HelloWorld.exe
+```
+
+Para que serve cada parte:
+
+- **`-std=c17`**: as versões recentes do gcc usam C23 por padrão. Em C23, `bool` é palavra reservada, e os arquivos das aulas que declaram `typedef int bool;` (como `aula08/pilhaEstatica.c`) não compilam. Com `-std=c17` compilam normalmente. Use sempre.
+- **`-o ...\arquivo.exe`**: nome do executável. Sem essa opção, o gcc cria um `a.exe` na pasta atual.
+- **`.\`**: o PowerShell só executa programas da pasta atual com esse prefixo. No Prompt de Comando (cmd) ele não é necessário: `aula01\HelloWorld.exe`.
+
+A regra geral é a mesma do macOS: compile o arquivo que tem `main`. Nas aulas 05 a 14, compile o `usa*.c`, que já faz `#include` da implementação (veja a tabela em [A regra geral](#a-regra-geral)).
+
+```powershell
+# aula 08: compile o usa*.c, não o pilhaEstatica.c
+gcc -std=c17 aula08\usaPilhaEstatica.c -o aula08\usaPilhaEstatica.exe
+.\aula08\usaPilhaEstatica.exe
+
+# exercício C++ da raiz: use g++ em vez de gcc
+g++ main.cpp -o main.exe
+.\main.exe
+
+# mais avisos e informações de depuração
+gcc -std=c17 -Wall -Wextra -g aula01\HelloWorld.c -o aula01\HelloWorld.exe
+```
+
+Para testar um programa interativo sem digitar, mande os comandos pelo pipe do PowerShell. O `` `n `` é a quebra de linha:
+
+```powershell
+"i 3`ni 7`np`nq" | .\aula08\usaPilhaEstatica.exe
+```
+
+O `-fsanitize=address` não funciona com o gcc do MinGW. Para usá-lo no Windows, use o `clang` do ambiente CLANG64 do MSYS2 ou o WSL.
+
+O `.gitignore` atual não ignora arquivos `.exe`. Para não mandar executáveis ao GitHub por engano, apague-os antes do commit:
+
+```powershell
+Get-ChildItem -Recurse -Filter *.exe | Where-Object { $_.FullName -notmatch '\\\.venv\\' } | Remove-Item
+```
+
+O filtro deixa de fora a pasta `.venv\`, que no Windows tem executáveis do Python.
 
 ## Roteiro das aulas de Estruturas de Dados em C
 
